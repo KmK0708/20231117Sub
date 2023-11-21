@@ -30,6 +30,7 @@ class SimpleEngine
 		}
 		return Instance; 
 	}
+	static int KeyCode;
 
 protected:
 	UWorld* World;

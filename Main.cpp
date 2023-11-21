@@ -8,6 +8,7 @@
 
 using namespace std;
 
+
 class KJY
 {
 public:
@@ -37,7 +38,7 @@ int compare(const KJY& LHS, const KJY& RHS)
 		return false;
 	}
 
-};
+}
 
 int main()
 {
