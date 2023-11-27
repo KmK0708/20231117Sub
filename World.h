@@ -1,17 +1,17 @@
 #pragma once
 #include <vector>
-#include "Actor.h"
+
+class AActor;
 
 class UWorld
 {
 public:
 	UWorld();
-	virtual	~UWorld();
+	virtual ~UWorld();
 
 	void SpawnActor(AActor* NewActor);
 
-	void Tick(int KeyCode);
-
+	void Tick();
 	void Render();
 
 	void SortRenderOrder();
@@ -20,8 +20,8 @@ public:
 	{
 		return Actors;
 	}
-
 protected:
+
 	std::vector<AActor*> Actors;
 };
 

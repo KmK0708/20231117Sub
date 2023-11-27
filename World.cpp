@@ -1,5 +1,7 @@
 #include "World.h"
+#include "Actor.h"
 #include <algorithm>
+
 
 UWorld::UWorld()
 {
@@ -7,6 +9,11 @@ UWorld::UWorld()
 
 UWorld::~UWorld()
 {
+	for (auto Actor : Actors)
+	{
+		delete Actor;
+	}
+	Actors.clear();
 }
 
 void UWorld::SpawnActor(AActor* NewActor)
@@ -17,11 +24,11 @@ void UWorld::SpawnActor(AActor* NewActor)
 	}
 }
 
-void UWorld::Tick(int KeyCode)
+void UWorld::Tick()
 {
 	for (auto Actor : Actors)
 	{
-		Actor->Tick(KeyCode);
+		Actor->Tick();
 	}
 }
 
@@ -35,12 +42,9 @@ void UWorld::Render()
 
 void UWorld::SortRenderOrder()
 {
-	std::sort(Actors.begin(), Actors.end(), std::less<AActor*>());
-
-	//람다로 정렬
-	std::sort(Actors.begin(), Actors.end(), [](const AActor* LHS, const AActor* RHS)
-	{
-		return LHS->SortOrder < RHS->SortOrder;
-	});
+	std::sort(Actors.begin(),
+		Actors.end(),
+		[](const AActor* LHS, const AActor* RHS) {
+			return LHS->SortOrder < RHS->SortOrder;
+		});
 }
-

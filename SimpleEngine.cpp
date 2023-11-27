@@ -1,13 +1,14 @@
 #include "SimpleEngine.h"
 #include "World.h"
+#include <conio.h>
 #include "Player.h"
 #include "Wall.h"
-#include "Monster.h"
 #include "Goal.h"
 #include "Floor.h"
-#include <conio.h>
+#include "Monster.h"
+#include "GameMode.h"
+#include "GameState.h"
 
-// * 로 안이 빈 사각형을 출력
 //**********
 //*P       *
 //*        *
@@ -20,9 +21,13 @@
 //**********
 
 SimpleEngine* SimpleEngine::Instance = nullptr;
+int SimpleEngine::KeyCode = 0;
+
 
 SimpleEngine::SimpleEngine()
 {
+	GameMode = nullptr;
+	GameState = nullptr;
 	Init();
 }
 
@@ -33,112 +38,108 @@ SimpleEngine::~SimpleEngine()
 
 void SimpleEngine::Init()
 {
-	// 시작 (윈도우창,그래픽창,사운드카드...)
 	IsRunning = true;
 	World = new UWorld();
 }
 
 void SimpleEngine::Run()
 {
-	// 구동
 	while (IsRunning)
 	{
-		int KeyCode = Input();
-		Tick(KeyCode);
-		// Clear Screen
+		Input();
+		Tick();
+		//Clear Screen
 		system("cls");
 		Render();
 	}
 }
 
+void SimpleEngine::Stop()
+{
+	IsRunning = false;
+}
+
 void SimpleEngine::Term()
 {
-	// 종료
+	GameMode = nullptr;
+	GameState = nullptr;
 	IsRunning = false;
 	delete World;
 }
 
-void SimpleEngine::Stop()
-{
-	// 중지
-	IsRunning = false;
-}
-
 void SimpleEngine::LoadLevel(std::string Filename)
 {
-	// Save
-	// Memory -> Disk : Serialize , Text(JSon), Binary(Umap)
+	//Save
+	//Memory -> Disk : Serialize , Text(JSON, csv), binary(umap)
 
-	// Load
-	// Disk -> Memory : Deserialize
+	//Load
+	//Disk -> Memory : Deserialize
 
-	std::string Maps[10] = {
-		"**********",
-		"*P       *",
-		"*        *",
-		"*        *",
-		"*     M  *",
-		"*        *",
-		"*        *",
-		"*        *",
-		"*       G*",
-		"**********",
+
+	//file ¹?²???, Æ²?? ¹?²? ??²¨??
+	std::string Map[10] = {
+		//char Map[10][11] = {
+			"********************",
+			"*P                 *",
+			"*                  *",
+			"*        M         *",
+			"*   M              *",
+			"*                  *",
+			"*                  *",
+			"*                  *",
+			"*            G     *",
+			"********************"
 	};
-	// for문 2개로 2차원 배열을 순회해서 *이면 벽을 생성하고 P이면 플레이어를 생성
-	for (int Y = 0; Y < 10; Y++)
-	{
-		for (int X = 0; X < 10; X++)
-		{
-			if (Maps[Y][X] == '*')
-			{
-				// 벽 생성
-				GetWorld()->SpawnActor(new AWall(X, Y));
 
-			}
-			else if (Maps[Y][X] == 'P')
+	for (int Y = 0; Y < 10; ++Y)
+	{
+		for (int X = 0; X < Map[Y].length(); ++X)
+		{
+			if (Map[Y][X] == '*')
 			{
-				// 플레이어 생성
+				//Wall
+				GetWorld()->SpawnActor(new AWall(X, Y));
+			}
+			else if (Map[Y][X] == 'P')
+			{
+				//Player
 				GetWorld()->SpawnActor(new APlayer(X, Y));
 			}
-			else if (Maps[Y][X] == 'M')
+			else if (Map[Y][X] == 'M')
 			{
-				// 몬스터 생성
+				//Monster
 				GetWorld()->SpawnActor(new AMonster(X, Y));
 			}
-			else if (Maps[Y][X] == 'G')
+			else if (Map[Y][X] == 'G')
 			{
-				// 골인지점 생성
+				//Goal
 				GetWorld()->SpawnActor(new AGoal(X, Y));
 			}
-			else if (Maps[Y][X] == ' ')
+			else if (Map[Y][X] == ' ')
 			{
-				// 빈공간 생성
-				
+				//Floor
 			}
-			// 바닥생성
+			//Floor
 			GetWorld()->SpawnActor(new AFloor(X, Y));
-
 		}
 	}
 
-	//GetWorld()->SpawnActor(new APlayer(10, 10));
-	//GetWorld()->SpawnActor(new AWall(0, 0));
-	//GetWorld()->SpawnActor(new AWall(1, 0));
-	//GetWorld()->SpawnActor(new AWall(0, 1));
 	GetWorld()->SortRenderOrder();
+
+	GameMode = new AGameMode();
+	GetWorld()->SpawnActor(GameMode);
+	GameState = new AGameState();
+	GetWorld()->SpawnActor(GameState);
 }
 
-int SimpleEngine::Input()
+void SimpleEngine::Input()
 {
-	// 키보드, 마우스, 게임패드, 네트워크
-	int KeyCode = _getch();
-
-	return KeyCode;
+	KeyCode = _getch();
 }
 
-void SimpleEngine::Tick(int KeyCode)
+void SimpleEngine::Tick()
 {
-	GetWorld()->Tick(KeyCode);
+	GetWorld()->Tick();
 }
 
 void SimpleEngine::Render()

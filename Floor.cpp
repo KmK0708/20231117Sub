@@ -2,8 +2,8 @@
 
 AFloor::AFloor()
 {
-	X = 10;
-	Y = 10;
+	X = 0;
+	Y = 0;
 	Shape = ' ';
 	SortOrder = 1;
 }
@@ -11,8 +11,8 @@ AFloor::AFloor()
 AFloor::AFloor(int NewX, int NewY, char NewShape, int NewSortOrder)
 {
 	Shape = NewShape;
-	X = NewX;
-	Y = NewY;
+	SetX(NewX);
+	SetY(NewY);
 	SortOrder = NewSortOrder;
 }
 

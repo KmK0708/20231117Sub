@@ -2,9 +2,9 @@
 
 AGoal::AGoal()
 {
+	Shape = 'G';
 	X = 10;
 	Y = 10;
-	Shape = 'G';
 	SortOrder = 200;
 }
 

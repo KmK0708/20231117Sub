@@ -1,7 +1,8 @@
 #include "Player.h"
-#include "Actor.h"
-#include "World.h"
 #include "SimpleEngine.h"
+#include "World.h"
+#include "Goal.h"
+#include "GameState.h"
 
 APlayer::APlayer()
 {
@@ -14,8 +15,8 @@ APlayer::APlayer()
 APlayer::APlayer(int NewX, int NewY, char NewShape, int NewSortOrder)
 {
 	Shape = NewShape;
-	X = NewX;
-	Y = NewY;
+	SetX(NewX);
+	SetY(NewY);
 	SortOrder = NewSortOrder;
 }
 
@@ -23,18 +24,18 @@ APlayer::~APlayer()
 {
 }
 
-void APlayer::Tick(int KeyCode)
+void APlayer::Tick()
 {
-	AActor::Tick(KeyCode);
-	// 또는 __super::Tick(KeyCode); 로도 사용 가능 이건 Vs에서만 사용 가능
+	//	AActor::Tick(KeyCode);
+	__super::Tick();
+	int KeyCode = SimpleEngine::KeyCode;
+
 	if (KeyCode == 'A' || KeyCode == 'a')
 	{
-		if (!IsCollide(X - 1,Y))
+		if (!IsCollide(X - 1, Y))
 		{
 			X--;
 		}
-		//GENGINE->GetWorld()->GetAllActors();
-		//X--;	
 	}
 	if (KeyCode == 'D' || KeyCode == 'd')
 	{
@@ -56,20 +57,38 @@ void APlayer::Tick(int KeyCode)
 		{
 			Y++;
 		}
+	}
+	if (KeyCode == 27)
+	{
+		GEngine->Stop();
+	}
 
+	AGoal* MyGoal = nullptr;
+	for (auto Actor : GEngine->GetWorld()->GetAllActors())
+	{
+		MyGoal = dynamic_cast<AGoal*>(Actor);
+		if (MyGoal &&
+			MyGoal->GetX() == X &&
+			MyGoal->GetY() == Y)
+		{
+			SimpleEngine::GetGameState()->IsNextLevel = true;
+			break;
+		}
 	}
 
 }
 
 bool APlayer::IsCollide(int NewX, int NewY)
 {
-	for (const auto& Actor : GENGINE->GetWorld()->GetAllActors())
+	for (const auto& Actor : GEngine->GetWorld()->GetAllActors())
 	{
 		if (this == Actor)
 		{
 			continue;
 		}
-		if (Actor->bCollideWithWall == true && Actor->GetX() == NewX && Actor->GetY() == NewY)
+		if (Actor->bCollide == true &&
+			Actor->GetX() == NewX &&
+			Actor->GetY() == NewY)
 		{
 			return true;
 		}

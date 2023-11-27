@@ -1,46 +1,64 @@
 #pragma once
-#include <vector>
 #include <string>
+
 class UWorld;
 class AActor;
+class AGameMode;
+class AGameState;
 
 class SimpleEngine
 {
-	private:
+private:
 	SimpleEngine();
-	public:
+
+public:
 	virtual ~SimpleEngine();
+
 	void Init();
 
 	void Run();
 
-	void Term();
-
 	void Stop();
+
+	void Term();
 
 	void LoadLevel(std::string Filename);
 
-	inline UWorld* GetWorld() const { return World; }
+	inline UWorld* GetWorld() const { return World; };
 
-	static SimpleEngine* GetInstance() 
+	static SimpleEngine* GetInstance()
 	{
 		if (Instance == nullptr)
 		{
 			Instance = new SimpleEngine();
 		}
-		return Instance; 
+		return Instance;
 	}
+
 	static int KeyCode;
+
+	static AGameState* GetGameState()
+	{
+		return GetInstance()->GameState;
+	}
+
+	static AGameMode* GetGameMode()
+	{
+		return GetInstance()->GameMode;
+	}
 
 protected:
 	UWorld* World;
 	bool IsRunning;
-	
-	int Input();
-	void Tick(int KeyCode);
+
+	void Input();
+	void Tick();
 	void Render();
 
 	static SimpleEngine* Instance;
+
+	AGameMode* GameMode;
+	AGameState* GameState;
 };
 
-#define GENGINE SimpleEngine::GetInstance()
+#define GEngine SimpleEngine::GetInstance()
