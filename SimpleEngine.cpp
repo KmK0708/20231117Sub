@@ -8,6 +8,8 @@
 #include "Monster.h"
 #include "GameMode.h"
 #include "GameState.h"
+#include <iostream>
+#include <fstream>
 
 //**********
 //*P       *
@@ -69,60 +71,27 @@ void SimpleEngine::Term()
 
 void SimpleEngine::LoadLevel(std::string Filename)
 {
-	//Save
-	//Memory -> Disk : Serialize , Text(JSON, csv), binary(umap)
-
-	//Load
-	//Disk -> Memory : Deserialize
-
-
-	//file ©ö?©÷???, ¨¡©÷?? ©ö?©÷? ??©÷¡§??
-	std::string Map[10] = {
-		//char Map[10][11] = {
-			"********************",
-			"*P                 *",
-			"*                  *",
-			"*        M         *",
-			"*   M              *",
-			"*                  *",
-			"*                  *",
-			"*                  *",
-			"*            G     *",
-			"********************"
-	};
-
-	for (int Y = 0; Y < 10; ++Y)
+	int Y = 0;
+	std::string line;
+	std::ifstream file(Filename);
+	if (file.is_open())
 	{
-		for (int X = 0; X < Map[Y].length(); ++X)
+		while (getline(file, line))
 		{
-			if (Map[Y][X] == '*')
+			for (int X = 0; X < line.length(); ++X)
 			{
-				//Wall
-				GetWorld()->SpawnActor(new AWall(X, Y));
+				LoadActor(X, Y, line[X]);
 			}
-			else if (Map[Y][X] == 'P')
-			{
-				//Player
-				GetWorld()->SpawnActor(new APlayer(X, Y));
-			}
-			else if (Map[Y][X] == 'M')
-			{
-				//Monster
-				GetWorld()->SpawnActor(new AMonster(X, Y));
-			}
-			else if (Map[Y][X] == 'G')
-			{
-				//Goal
-				GetWorld()->SpawnActor(new AGoal(X, Y));
-			}
-			else if (Map[Y][X] == ' ')
-			{
-				//Floor
-			}
-			//Floor
-			GetWorld()->SpawnActor(new AFloor(X, Y));
+			Y++;
 		}
+		file.close();
 	}
+	else
+	{
+		std::cout << "File Open Error" << std::endl;
+		Stop();
+	}
+
 
 	GetWorld()->SortRenderOrder();
 
@@ -145,5 +114,35 @@ void SimpleEngine::Tick()
 void SimpleEngine::Render()
 {
 	GetWorld()->Render();
+}
+
+void SimpleEngine::LoadActor(int NewX, int NewY, char Actor)
+{
+	if (Actor == '*')
+	{
+		//Wall
+		GetWorld()->SpawnActor(new AWall(NewX, NewY));
+	}
+	else if (Actor == 'P')
+	{
+		//Player
+		GetWorld()->SpawnActor(new APlayer(NewX, NewY));
+	}
+	else if (Actor == 'M')
+	{
+		//Monster
+		GetWorld()->SpawnActor(new AMonster(NewX, NewY));
+	}
+	else if (Actor == 'G')
+	{
+		//Goal
+		GetWorld()->SpawnActor(new AGoal(NewX, NewY));
+	}
+	else if (Actor == ' ')
+	{
+		//Floor
+	}
+	//Floor
+	GetWorld()->SpawnActor(new AFloor(NewX, NewY));
 }
 

@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -69,14 +72,14 @@ int main()
 	//cout << (KJYs[1] > KJYs[2]) << endl;
 #pragma endregion
 
-
 	SimpleEngine* SEngine = SimpleEngine::GetInstance();
 	
 
-	SEngine->LoadLevel("A.Smap");
+	SEngine->LoadLevel("Data/level01.smap");
 	SEngine->Run();
 
 	delete SEngine;
+
 
 	return 0;
 }
