@@ -1,4 +1,7 @@
 #pragma once
+#include "SDL.h"
+#include <iostream>
+
 class AActor
 {
 public:
@@ -27,9 +30,22 @@ public:
 		return this->SortOrder > RHS.SortOrder;
 	}
 
+	SDL_Color Color;
+
 	int SortOrder;
 	bool bCollide;
 
+	Uint16 Size;
+
+	SDL_Surface* MySurface;	// 이미지를 저장할 변수
+	SDL_Texture* MyTexture;	// 이미지를 저장할 변수
+
+	bool bIsSprite;
+	int SpriteSizeX;
+	int SpriteSizeY;
+	
+	virtual void LoadBMP(std::string FileName, SDL_Color ColorKey = SDL_Color{ 255, 255, 255, 0 });
+	
 protected:
 	int X;
 	int Y;

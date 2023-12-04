@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Actor.h"
 #include "SimpleEngine.h"
+#include "SDL.h"
 
 #include <string>
 #include <vector>
@@ -9,8 +10,12 @@
 #include <fstream>
 #include <iostream>
 
+#pragma comment(lib, "SDL2")
+#pragma comment(lib, "SDL2main")
+
 using namespace std;
 
+#pragma region 연산자오버로딩
 
 class KJY
 {
@@ -42,8 +47,10 @@ int compare(const KJY& LHS, const KJY& RHS)
 	}
 
 }
+#pragma endregion
 
-int main()
+
+int SDL_main(int argc, char* argv[])
 {
 #pragma region sort를 이용한 정렬방식
 

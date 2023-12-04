@@ -30,12 +30,20 @@ SimpleEngine::SimpleEngine()
 {
 	GameMode = nullptr;
 	GameState = nullptr;
+	SDL_Init(SDL_INIT_EVERYTHING);
+	MyWindow = SDL_CreateWindow("HelloWorld", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	MyRenderer = SDL_CreateRenderer(MyWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+
 	Init();
 }
 
 SimpleEngine::~SimpleEngine()
 {
 	Term();
+
+	SDL_DestroyRenderer(MyRenderer);
+	SDL_DestroyWindow(MyWindow);
+	SDL_Quit();
 }
 
 void SimpleEngine::Init()
@@ -48,11 +56,32 @@ void SimpleEngine::Run()
 {
 	while (IsRunning)
 	{
+		DeltaSeconds = SDL_GetTicks64() - LastTime;
+		LastTime = SDL_GetTicks64();
+
 		Input();
+
+		switch (MyEvent.type)
+		{
+		case SDL_QUIT:
+			IsRunning = false;
+			break;
+		case SDL_KEYDOWN:
+			if (MyEvent.key.keysym.sym == SDLK_ESCAPE)
+			{
+				IsRunning = false;
+			}
+			break;
+		}
 		Tick();
 		//Clear Screen
-		system("cls");
+		//system("cls");
+		SDL_SetRenderDrawColor(GEngine->MyRenderer, 0, 0, 0, 0);
+		SDL_RenderClear(GEngine->MyRenderer);
+
 		Render();
+
+		SDL_RenderPresent(GEngine->MyRenderer);
 	}
 }
 
@@ -71,6 +100,9 @@ void SimpleEngine::Term()
 
 void SimpleEngine::LoadLevel(std::string Filename)
 {
+	Term();
+	Init();
+
 	int Y = 0;
 	std::string line;
 	std::ifstream file(Filename);
@@ -88,7 +120,6 @@ void SimpleEngine::LoadLevel(std::string Filename)
 	}
 	else
 	{
-		std::cout << "File Open Error" << std::endl;
 		Stop();
 	}
 
@@ -103,7 +134,7 @@ void SimpleEngine::LoadLevel(std::string Filename)
 
 void SimpleEngine::Input()
 {
-	KeyCode = _getch();
+	SDL_PollEvent(&MyEvent);
 }
 
 void SimpleEngine::Tick()
@@ -145,4 +176,3 @@ void SimpleEngine::LoadActor(int NewX, int NewY, char Actor)
 	//Floor
 	GetWorld()->SpawnActor(new AFloor(NewX, NewY));
 }
-
