@@ -4,7 +4,7 @@
 #include "SimpleEngine.h"
 
 AActor::AActor() :
-	X(0), Y(0), Shape(' '), SortOrder(0), bCollide(false), Size(20)
+	X(0), Y(0), Shape(' '), SortOrder(0), bCollide(false), Size(32)
 {
 	MySurface = nullptr;
 	MyTexture = nullptr;
@@ -22,7 +22,7 @@ AActor::AActor(int NewX, int NewY)
 	Shape = ' ';
 	SortOrder = 0;
 	bCollide = false;
-	Size = 20;
+	Size = 32;
 	MySurface = nullptr;
 	MyTexture = nullptr;
 	bIsSprite = false;
@@ -60,10 +60,10 @@ void AActor::Render()
 	
 	if (bIsSprite)
 	{
-		SDL_RenderCopy(GEngine->MyRenderer,
+	/*	SDL_RenderCopy(GEngine->MyRenderer,
 			MyTexture,
 			new SDL_Rect{ 0, 0, MySurface->w / SpriteSizeX, MySurface->h / SpriteSizeY },
-			new SDL_Rect{ X * Size, Y * Size, Size, Size });
+			new SDL_Rect{ X * Size, Y * Size, Size, Size });*/
 	}
 	else
 	{

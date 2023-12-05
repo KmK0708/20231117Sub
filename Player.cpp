@@ -10,8 +10,10 @@ APlayer::APlayer()
 	X = 10;
 	Y = 10;
 	SortOrder = 500;
-	PlayerProcessTime = 500;
+	PlayerProcessTime = 400;
 	PlayerElaspedTime = 0;
+	SpriteIndex = 0;
+	SpriteDirection = 0;
 }
 
 APlayer::APlayer(int NewX, int NewY, char NewShape, int NewSortOrder, SDL_Color NewColor)
@@ -21,14 +23,15 @@ APlayer::APlayer(int NewX, int NewY, char NewShape, int NewSortOrder, SDL_Color 
 	SetY(NewY);
 	SortOrder = NewSortOrder;
 	Color = NewColor;
+	SpriteIndex = 0;
+	SpriteDirection = 0;
 
-
-	PlayerProcessTime = 500;
-	PlayerElaspedTime = 0;
 	LoadBMP("Data/Player.bmp", SDL_Color{ 255, 0, 255, 0 });
 	bIsSprite = true;
 	SpriteSizeX = 5;
 	SpriteSizeY = 5;
+	PlayerProcessTime = 400;
+	PlayerElaspedTime = 0;
 }
 
 APlayer::~APlayer()
@@ -39,7 +42,15 @@ void APlayer::Tick()
 {
 	//	AActor::Tick(KeyCode);
 	__super::Tick();
-	//int KeyCode = SimpleEngine::KeyCode;
+
+	PlayerElaspedTime += GEngine->GetWorldDeltaSeconds();
+	if (PlayerElaspedTime >= PlayerProcessTime)
+	{
+		SpriteIndex++;
+		SpriteIndex = SpriteIndex % SpriteSizeX;
+		PlayerElaspedTime = 0;
+	}
+
 	int KeyCode = GEngine->MyEvent.key.keysym.sym;
 
 	if (GEngine->MyEvent.type == SDL_KEYDOWN)
@@ -57,6 +68,7 @@ void APlayer::Tick()
 	{
 		if (!IsCollide(X - 1, Y))
 		{
+			SpriteDirection = 0;
 			X--;
 		}
 	}
@@ -64,6 +76,7 @@ void APlayer::Tick()
 	{
 		if (!IsCollide(X + 1, Y))
 		{
+			SpriteDirection = 1;
 			X++;
 		}
 	}
@@ -71,6 +84,7 @@ void APlayer::Tick()
 	{
 		if (!IsCollide(X, Y - 1))
 		{
+			SpriteDirection = 2;
 			Y--;
 		}
 	}
@@ -78,6 +92,7 @@ void APlayer::Tick()
 	{
 		if (!IsCollide(X, Y + 1))
 		{
+			SpriteDirection = 3;
 			Y++;
 		}
 	}
@@ -98,6 +113,22 @@ void APlayer::Tick()
 			break;
 		}
 	}
+
+}
+
+void APlayer::Render()
+{
+	__super::Render();
+
+	int SpriteWidth = MySurface->w / SpriteSizeX;
+	int SpriteHeight = MySurface->h / SpriteSizeY;
+	int StartX = SpriteIndex * SpriteWidth;
+	int StartY = SpriteDirection * SpriteHeight;
+
+	SDL_RenderCopy(GEngine->MyRenderer,
+		MyTexture,
+		new SDL_Rect{ StartX, StartY, SpriteWidth, SpriteHeight },
+		new SDL_Rect{ X * Size, Y * Size, Size, Size });
 
 }
 
